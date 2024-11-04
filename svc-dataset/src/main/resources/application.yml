@@ -1,0 +1,32 @@
+spring:
+  profiles:
+    # 需要使用的配置文件的后缀
+    # 可以通过“性能分析器”快速切换调试环境（需结合pom文件profiles）。
+    active: @profiles.active@
+#    active: @profiles.active@,common-@profiles.active@,fusion-@profiles.active@,auditSync-@profiles.active@
+#    active: dev,common-dev,fusion-dev  #开发模式
+#    active: test,common-test,fusion-test  #测试模式
+#    active: prod,common-prod,fusion-prod  #生产模式
+# 文件上传大小配置 单个文件大小 总的文件大小
+  servlet:
+    multipart:
+      max-file-size: 2000MB
+      max-request-size: 2000MB
+  # 静态资源目录
+  web:
+    resources:
+      static-locations: file:/opt/pfiles/upload
+
+# 文件存储根目录
+file:
+  path:
+    # 上传
+    upload: /opt/pfiles/upload
+    # upload目录的子目录 为了识别静态资源的url，在url上固定加了一层标识
+    sub-upload: static
+    # 下载
+    download: /opt/pfiles/template
+    # 备份
+    backup: /opt/pfiles/backup
+    # 上传文件（研发用）
+    root-path: /opt/pfiles/dev

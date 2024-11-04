@@ -1,0 +1,135 @@
+# 应用服务 WEB 访问端口
+server:
+  port: 8080
+  servlet:
+    context-path: /portal
+
+cors:
+  # 浏览器允许所有的域访问  注意 * 不能满足带有cookie的访问,Origin 必须是全匹配
+  allowed-origins: '*'
+  allowed-methods: GET,POST,OPTIONS
+  max-age: 3600
+  allowed-headers: '*'
+  # 允许带cookie访问
+  allow-credentials: false
+
+spring:
+  datasource:
+    # jdbc 连接基础配置
+    username: postgres
+    password: Abc123$%^
+    url: jdbc:postgresql://localhost:5432/dataset
+    driver-class-name: org.postgresql.Driver
+
+    #hikari数据源特性配置
+    hikari:
+      maximum-pool-size: 8 #最大连接数,默认值10.
+      minimum-idle: 8 #最小空闲连接，默认值10.
+#      connection-timeout: 30000 #连接超时时间(毫秒),默认值30秒.
+      #空闲连接超时时间，默认值600000(10分钟),只有空闲连接数大于最大连接数且空闲时间超过该值，才会被释放
+      #如果大于等于 max-lifetime 且 max-lifetime>0,则会被重置为0永不释放.
+#      idle-timeout: 600000
+      #连接最大存活时间,默认值30分钟.设置应该比mysql设置的超时时间短
+#      max-lifetime: 1800000
+#      connection-test-query: select 1 #连接测试查询
+  redis:
+    # 是否启用redis  'false'停用redis 并将 store-type: none
+    enabled: false
+    # 指定方式：redis，jedisPool，jedisCluster(该模式需要放开集群配置项信息),未部署redis时必须设置为jvm
+    primary-name: jedisCluster
+    #    host: 192.168.1.62
+    #    port: 6379
+    database: 0
+    password:
+    timeout: 20000
+    lettuce:
+      pool:
+        max-active: 50  # 连接池最大连接数（使用负值表示没有限制）
+        max-wait: -1 # 连接池最大阻塞等待时间（使用负值表示没有限制）
+        max-idle: 8  # 连接池中的最大空闲连接
+        min-idle: 2  # 连接池中的最小空闲连接
+        validationQuery: SELECT 1
+    # 集群配置 启用该配置需要设定 primary-name，同时注释掉host和port
+    cluster:
+      nodes: 100.2.3.11:22400,100.2.3.11:22401,100.2.3.11:22403
+    max-attempts: 1
+    user: test_ngw_portal_redis@HADOOP.COM
+    realm: HADOOP.COM
+    ssl: true
+    config-path: /opt/pfiles/jedisClusterConfig
+
+  elasticsearch:
+    # 是否启用redis  'false'停用redis 并将 store-type: none
+    enabled: false
+    # 指定方式： esPool，esCluster(该模式需要放开集群配置项信息)
+    primary-name: esPool
+    host: 192.168.1.76
+    port: 9200
+    # 集群模式指定 configPath：  esParams.properties
+    config-path: "E:\\conf\\"  #  esParams.properties
+# 配置 mybatis-plus(mybatis)
+mybatis-plus:
+  # 包扫描路径(当前项目的实体类所在位置。别名包扫描路径，通过该属性可以给包中的类注册别名，多个路径用逗号分割)
+  # 指定pojo扫描包位置让mybatis自动扫描到指定义的pojo包下
+  type-aliases-package: com.ngw.**.pojo
+  # 指定位置扫描Mapper接口对应的xml文件，多个目录用逗号或者分号分隔(告诉 Mapper 所对应的 XML 文件位置)
+  mapper-locations: classpath*:com/ngw/**/xml/*.xml
+  configuration:
+    # 是否开启自动驼峰命名规则映射:从数据库列名到Java属性驼峰命名的类似映射
+    #    map-underscore-to-camel-case: true
+    # 如果查询结果中包含空值的列，则 MyBatis 在映射的时候，不会映射这个字段
+    # 允许在resultType="map"时映射null值
+    #    call-setters-on-nulls: true
+    # 这个配置会将执行的sql打印出来，在开发或测试的时候可以用(包括执行结果)
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  global-config:
+    db-config:
+      # 主键类型 AUTO:"数据库ID自增"
+      # INPUT:"用户输入ID",
+      # ID_WORKER:"全局唯一ID (数字类型唯一ID)",
+      # UUID:"全局唯一ID UUID";
+      id-type: ASSIGN_UUID
+      # 字段策略 IGNORED:"忽略判断"  NOT_NULL:"非 NULL 判断")  NOT_EMPTY:"非空判断"
+      #      field-strategy: NOT_EMPTY
+      # 数据库类型
+      #      db-type: MYSQL
+      # 逻辑删除配置
+      # 删除前
+      logic-not-delete-value: 0
+      # 删除后
+      logic-delete-value: 1
+      # 数据库表名的前缀
+      table-prefix: t_
+      logic-delete-field: delFlag
+
+#配置参数
+app:
+  # 允许登录失败的次数
+  login-error-num: 6
+  # 登录失败锁定时长， 单位: 分钟
+  login-error-timeout: 60
+  # 登录失败锁定时长，5 * 60  单位: 秒
+  login-timeout: 1800
+  # 是否本地开发模式：  本地开发模式 true; 生产模式 false
+  dev-mode: false
+  # true 审计系统所需取数逻辑， false我们的操作日志所需逻辑
+  audit-log: true
+  application-id: eaa30426e66311eebcc78c16458ccb29
+  application-name: 门户
+  # 审计同步——锁超时时间 秒
+  redis-expire-time: 600
+  # 审计同步——同步数据更新批量数
+  batch-num: 400
+  # 审计同步——同步数据时间间隔
+  insert-sync-time: 0 0/10 * * * ?      # 0/10 * * * * ?
+  # 审计同步——清空同步日志时间  2*60*1000 单位秒
+  delete-log-time: 0 0/10 * * * ?
+  # 审计同步——清理多久之前的数据  类型（YEAR,MONTH,DAY,HOUR,MINUTE,SECOND）
+  delete-time-type-key: DAY
+  delete-time-type-value: 0
+  # 审计同步——调用第三方接口
+  url: http://192.168.1.73:8090/addOperationLog
+
+# 大屏数据需代理接口
+data-ingestion:
+  url: http://localhost:8090/7chu/data/analysis/
