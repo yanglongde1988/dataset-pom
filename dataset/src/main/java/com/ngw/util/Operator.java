@@ -7,7 +7,7 @@ import java.util.Arrays;
 
 public enum Operator {
 
-    EQUAL("equal", "=") {
+    EQUAL("eq", "=") {
         @Override
         public String loadParam(String param, String paramType) {
             if (!"NUMBER".equalsIgnoreCase(paramType)) {
@@ -16,7 +16,7 @@ public enum Operator {
             return String.format("=%s", param);
         }
     },
-    NOT_EQUAL("notEqual", "!=") {
+    NOT_EQUAL("ne", "!=") {
         @Override
         public String loadParam(String param, String paramType) {
             if (!"NUMBER".equalsIgnoreCase(paramType)) {
@@ -25,47 +25,7 @@ public enum Operator {
             return String.format("!=%s", param);
         }
     },
-    IN("in", "in") {
-        @Override
-        public String loadParam(String param, String paramType) {
-            String[] ins = param.split(",");
-            String join;
-            if ("NUMBER".equalsIgnoreCase(paramType)) {
-                join = StringUtils.join(Arrays.asList(ins), ",");
-            } else {
-                join = "'" + StringUtils.join(Arrays.asList(ins), "','") + "'";
-            }
-            return String.format(" in (%s)", join);
-        }
-    },
-    NOT_IN("notIn", "not in") {
-        @Override
-        public String loadParam(String param, String paramType) {
-            String[] ins = param.split(",");
-            String join;
-            if ("NUMBER".equalsIgnoreCase(paramType)) {
-                join = StringUtils.join(Arrays.asList(ins), ",");
-            } else {
-                join = "'" + StringUtils.join(Arrays.asList(ins), "','") + "'";
-            }
-            return String.format(" not in (%s)", join);
-        }
-    },
-    LIKE("like", "like") {
-        @Override
-        public String loadParam(String param, String paramType) {
-            Assert.isTrue("TEXT".equalsIgnoreCase(paramType), "参数类型不支持");
-            return " like '%" + param + "%'";
-        }
-    },
-    NOT_LIKE("notLike", "not like") {
-        @Override
-        public String loadParam(String param, String paramType) {
-            Assert.isTrue("TEXT".equalsIgnoreCase(paramType), "参数类型不支持");
-            return " not like '%" + param + "%'";
-        }
-    },
-    GREATER("greater", ">") {
+    GREATER_THAN("gt", ">") {
         @Override
         public String loadParam(String param, String paramType) {
             if (!"NUMBER".equalsIgnoreCase(paramType)) {
@@ -74,7 +34,7 @@ public enum Operator {
             return ">" + param;
         }
     },
-    GREATER_AND_EQUAL("greaterAndEqual", ">=") {
+    GREATER_THAN_OR_EQUAL("ge", ">=") {
         @Override
         public String loadParam(String param, String paramType) {
             if (!"NUMBER".equalsIgnoreCase(paramType)) {
@@ -83,7 +43,7 @@ public enum Operator {
             return ">=" + param;
         }
     },
-    LESS("less", "<") {
+    LESS_THAN("lt", "<") {
         @Override
         public String loadParam(String param, String paramType) {
             if (!"NUMBER".equalsIgnoreCase(paramType)) {
@@ -92,7 +52,7 @@ public enum Operator {
             return "<" + param;
         }
     },
-    LESS_AND_EQUAL("lessAndEqual", "<=") {
+    LESS_THAN_OR_EQUAL("le", "<=") {
         @Override
         public String loadParam(String param, String paramType) {
             if (!"NUMBER".equalsIgnoreCase(paramType)) {
@@ -100,113 +60,114 @@ public enum Operator {
             }
             return "<=" + param;
         }
+    },
+    IN("in", " in ") {
+        @Override
+        public String loadParam(String param, String paramType) {
+            String in = getIn(param, paramType);
+            return String.format(" in (%s)", in);
+        }
+    },
+    NOT_IN("nin", " not in ") {
+        @Override
+        public String loadParam(String param, String paramType) {
+            String in = getIn(param, paramType);
+            return String.format(" not in (%s)", in);
+        }
+    },
+    LIKE("like", " like ") {
+        @Override
+        public String loadParam(String param, String paramType) {
+            Assert.isTrue("TEXT".equalsIgnoreCase(paramType), "参数类型不支持");
+            return " like '%" + param + "%'";
+        }
+    },
+    NOT_LIKE("unlike", " not like ") {
+        @Override
+        public String loadParam(String param, String paramType) {
+            Assert.isTrue("TEXT".equalsIgnoreCase(paramType), "参数类型不支持");
+            return " not like '%" + param + "%'";
+        }
+    },
+    START_WITH("sw", " like ") {
+        @Override
+        public String loadParam(String param, String paramType) {
+            Assert.isTrue("TEXT".equalsIgnoreCase(paramType), "参数类型不支持");
+            return " like '" + param + "%'";
+        }
+    },
+    NOT_START_WITH("nsw", " not like ") {
+        @Override
+        public String loadParam(String param, String paramType) {
+            Assert.isTrue("TEXT".equalsIgnoreCase(paramType), "参数类型不支持");
+            return " not like '" + param + "%'";
+        }
+    },
+    END_WITH("ew", " like ") {
+        @Override
+        public String loadParam(String param, String paramType) {
+            Assert.isTrue("TEXT".equalsIgnoreCase(paramType), "参数类型不支持");
+            return " like '%" + param + "'";
+        }
+    },
+    NOT_END_WITH("new", " not like ") {
+        @Override
+        public String loadParam(String param, String paramType) {
+            Assert.isTrue("TEXT".equalsIgnoreCase(paramType), "参数类型不支持");
+            return " not like '%" + param + "'";
+        }
+    },
+    CONTAIN_THAN("ct", " like ") {
+        @Override
+        public String loadParam(String param, String paramType) {
+            Assert.isTrue("TEXT".equalsIgnoreCase(paramType), "参数类型不支持");
+            return " like '%" + param + "%'";
+        }
+    },
+    NOT_CONTAIN_THAN("nct", " not like ") {
+        @Override
+        public String loadParam(String param, String paramType) {
+            Assert.isTrue("TEXT".equalsIgnoreCase(paramType), "参数类型不支持");
+            return " not like '%" + param + "%'";
+        }
+    },
+    NULL("null", " is null ") {
+        @Override
+        public String loadParam(String param, String paramType) {
+            return " is null";
+        }
+    },
+    NOT_NULL("notnull", " is not null ") {
+        @Override
+        public String loadParam(String param, String paramType) {
+            return " is not null";
+        }
+    },
+    IN_ARRAY("ia", " in ") {
+        @Override
+        public String loadParam(String param, String paramType) {
+            String in = getIn(param, paramType);
+            return String.format(" in (%s)", in);
+        }
+    },
+    NOT_IN_ARRAY("nia", " not in ") {
+        @Override
+        public String loadParam(String param, String paramType) {
+            String in = getIn(param, paramType);
+            return String.format(" not in (%s)", in);
+        }
     };
 
-
-//    LIKE_START("前缀", "like") {
-//        @Override
-//        public String loadParam(String param, String paramType) {
-//            return " like '" + param + "%' ";
-//        }
-//    },
-//    LIKE_NOT_START("非前缀", "not like") {
-//        @Override
-//        public String loadParam(String param, String paramType) {
-//            return " not like '" + param + "%' ";
-//        }
-//    },
-//    LIKE_END("后缀", "like") {
-//        @Override
-//        public String loadParam(String param, String paramType) {
-//            return " like '%" + param + "' ";
-//        }
-//    },
-//    LIKE_EQUAL("全包含", "=") {
-//        @Override
-//        public String loadParam(String param, String paramType) {
-//            return " like '" + param + "' ";
-//        }
-//    },
-//    START_("开始于", "=") {
-//        @Override
-//        public String loadParam(String param, String paramType) {
-//            return " like '" + param + "' ";
-//        }
-//    },
-//    END_("结束于", "=") {
-//        @Override
-//        public String loadParam(String param, String paramType) {
-//            return " like '" + param + "' ";
-//        }
-//    },
-//    IS_NULL("为空", "is null") {
-//        @Override
-//        public String loadParam(String param, String paramType) {
-//            return " is null ";
-//        }
-//    },
-//    IS_NOT_NULL("不为空", "is not null") {
-//        @Override
-//        public String loadParam(String param, String paramType) {
-//            return " is not null ";
-//        }
-//    },
-//    IS_IN_LIST("在列表", "in") {
-//        @Override
-//        public String loadParam(String param, String paramType) {
-//            JSONArray array = JSON.parseArray(param);
-//            return String.format(" in ('%s')", StringUtils.join(array, "','"));
-//        }
-//    },
-//    IS_NOT_IN_LIST("不在列表", "not in") {
-//        @Override
-//        public String loadParam(String param, String paramType) {
-//            JSONArray array = JSON.parseArray(param);
-//            return String.format(" not in ('%s')", StringUtils.join(array, "','"));
-//        }
-//    },
-//    //TODO
-//    LIKE_LIST("包含列表", "like") {
-//        @Override
-//        public String loadParam(String param, String paramType) {
-//            return " 1=1 ";
-//        }
-//    },
-//    //TODO
-//    SEARCH("搜索", "search") {
-//        @Override
-//        public String loadParam(String param, String paramType) {
-//            return " 1=1 ";
-//        }
-//    },
-//    //TODO
-//    LIKE_START_LIST("前缀列表", "like") {
-//        @Override
-//        public String loadParam(String param, String paramType) {
-//            return " 1=1 ";
-//        }
-//    },
-//    //TODO
-//    LIKE_END_LIST("后缀列表", "like") {
-//        @Override
-//        public String loadParam(String param, String paramType) {
-//            return " 1=1 ";
-//        }
-//    },
-//    //TODO
-//    NOT_CONTAIN_LIST("不包含列表", "like") {
-//        @Override
-//        public String loadParam(String param, String paramType) {
-//            return " 1=1 ";
-//        }
-//    },
-//    //TODO
-//    REG("reg", "reg") {
-//        @Override
-//        public String loadParam(String param, String paramType) {
-//            return " 1=1 ";
-//        }
-//    };
+    private static String getIn(String param, String paramType) {
+        String[] paramArr = param.split(",");
+        String in;
+        if ("NUMBER".equalsIgnoreCase(paramType)) {
+            in = StringUtils.join(Arrays.asList(paramArr), ",");
+        } else {
+            in = "'" + StringUtils.join(Arrays.asList(paramArr), "','") + "'";
+        }
+        return in;
+    }
 
     private String key;
     private String value;
